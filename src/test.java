@@ -1,12 +1,13 @@
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Stack;
 
 /**
  * Created by Andrew on 2016/1/19.
  */
 public class test {
     public static void main(String[] args) {
-        int MAX = 26;
+//        int MAX = 26;
         /*int rand[] = new int[25];
         for (int i = 0; i < 25; i++) {
             rand[i] = 0;
@@ -67,5 +68,13 @@ public class test {
             System.out.println(rands[i]);
         }*/
 
+        Stack<Integer> stack = new Stack<Integer>();
+        for (int i = 25; i >= 1; i--) {
+            stack.push(i);
+        }
+        for (int i = 0; i < 25; i++) {
+            System.out.println(stack);
+            System.out.println(stack.pop());
+        }
     }
 }

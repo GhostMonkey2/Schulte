@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Stack;
 
 /**
  * Created by Andrew on 2016/1/19.
@@ -19,10 +20,13 @@ public class Layout implements MouseListener {
     int rands[];
 
     boolean isFirstClicked =true;
+    boolean isInitial = false;
+    boolean isWin = false;
 
     Block blocks[][];
 
-    HashMap<Object, Object> hashMap;
+//    HashMap<Object, Object> hashMap;
+    Stack<Integer> stack;
 
     public Layout() {
 
@@ -39,6 +43,11 @@ public class Layout implements MouseListener {
 
         blocks = new Block[ROW][COL];
 
+        stack = new Stack<Integer>();
+        for (int i = 25; i >= 1; i--) {
+            stack.push(i);
+        }
+
         rands = new int[25];
 
         for (int i = 0; i < ROW; i++) {
@@ -53,7 +62,7 @@ public class Layout implements MouseListener {
         }
         //theFrame.getContentPane().add(mainPanel);
         theFrame.getContentPane().add(mainPanel);
-        theFrame.setBounds(100, 100, 500, 500);
+        theFrame.setBounds(800, 100, 500, 500);
         theFrame.setVisible(true);
 
     }
@@ -61,26 +70,33 @@ public class Layout implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (isFirstClicked) {
-            for (int i = 0; i < ROW; i++) {
-                for (int j = 0; j < COL; j++) {
-                    isFirstClicked = false;
-                    createRand(25);
-                    createOrder(25);
-                    blocks[i][j].setOrder(rands[i+j*COL]);
-                    blocks[i][j].setLabel(Integer.toString(rands[i+j*COL]));
-                }
-            }
+            createRand(25);
+            isFirstClicked = false;
+            startNewGame();
         }
+
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COL; j++) {
                 if (e.getSource() == blocks[i][j]) {
-                    if(blocks[i][j].getOrder() == getOrder()) {
-                        blocks[i][j].setVisible(false);
+                    if (isInitial == false) {
+                        isInitial = true;
+                        break;
                     }
+
+                    int order = getOrder();
+                    System.out.println("get order " + order);
+                    System.out.println("order " + blocks[i][j].getOrder());
+                    if (blocks[i][j].getOrder() == order) {
+                        System.out.println(blocks[i][j].getOrder());
+                        blocks[i][j].setChecked(true);
+                        blocks[i][j].setVisible(false);
+                    } else
+                        stack.push(stack.peek() - 1);
 
                 }
             }
         }
+        checkwin();
 
     }
 
@@ -104,10 +120,10 @@ public class Layout implements MouseListener {
 
     }
 
-    public void createOrder(int num) {
-        /**
-         等搞明白hashmap再补写这段代码
-        */
+  /*  public void createOrder(int num) {
+        *//**
+
+        *//*
         Random random = new Random();
         hashMap = new HashMap<Object, Object>();
 
@@ -117,7 +133,7 @@ public class Layout implements MouseListener {
                 hashMap.put(n, i);
             }
         }
-    }
+    }*/
 
     public void createRand(int num) {
 
@@ -142,14 +158,43 @@ public class Layout implements MouseListener {
         }
     }
 
+    public void checkwin() {
+        if (stack.size() == 0) {
+            isWin = true;
+            for (int i = 0; i < ROW; i++) {
+                for (int j = 0; j < COL; j++) {
+                    blocks[i][j].setVisible(true);
+                    blocks[i][j].setLabel("");
+                }
+            }
+            blocks[2][0].setLabel("W");
+            blocks[2][1].setLabel("I");
+            blocks[2][2].setLabel("N");
+            blocks[2][3].setLabel("!");
 
-    //TODO 自己写数据结构实现此功能
+            restartGame();
+        }
+
+    }
+
+    public void restartGame() {
+        isFirstClicked = true;
+        isInitial = false;
+        isWin = false;
+    }
+
+    public void startNewGame() {
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) {
+                blocks[i][j].setOrder(rands[i * ROW + j]);
+                blocks[i][j].setLabel(Integer.toString(rands[i * ROW + j]));
+            }
+        }
+    }
+
+    //
 
     public int getOrder() {
-        Object values[] = new Object[25];
-        values = hashMap.keySet().toArray();
-        int n = Integer.parseInt(values[0].toString());
-        hashMap.remove(n);
-        return n;
+        return stack.pop();
     }
 }

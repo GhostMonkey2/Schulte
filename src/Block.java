@@ -6,6 +6,7 @@ import javax.swing.*;
 public class Block extends JButton {
 
     public int order;
+    public boolean isChecked = false;
 
     public Block() {
     }
@@ -20,5 +21,13 @@ public class Block extends JButton {
 
     public int getOrder() {
         return order;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
+    public boolean getChecked() {
+        return isChecked;
     }
 }
